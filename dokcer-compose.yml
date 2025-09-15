@@ -1,0 +1,27 @@
+services:
+  db:
+    image: postgres:latest
+    container_name: postgres
+    hostname: db
+    restart: always
+    networks:
+      - bookNetWork
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=banco
+
+  pessoa:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    networks:
+      - bookNetWork
+
+networks:
+  bookNetWork:
+    driver: bridge
