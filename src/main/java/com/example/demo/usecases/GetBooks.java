@@ -1,7 +1,7 @@
 package com.example.demo.usecases;
 
 import com.example.demo.domain.Book;
-import com.example.demo.repository.BookRepository;
+import com.example.demo.gateways.BookGateway;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +11,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GetBooks {
 
-    private final BookRepository repository;
+    private final BookGateway bookGateway;
 
-    public List<Book> handle() {
-        return repository.findAll();
+    public List<Book> execute() {
+        return bookGateway.listAll();
     }
 }
 

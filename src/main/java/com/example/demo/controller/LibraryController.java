@@ -2,14 +2,17 @@ package com.example.demo.controller;
 
 import com.example.demo.controller.dtos.BookPostRequestDTO;
 import com.example.demo.controller.dtos.BookPutRequestDTO;
-import com.example.demo.domain.Book;
+import com.example.demo.controller.dtos.BookResponseDTO;
+import com.example.demo.controller.mapper.BookMapper;
 import com.example.demo.usecases.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/books")
@@ -21,35 +24,35 @@ public class LibraryController {
     private final GetBook getBook;
     private final UpdateBook updateBook;
     private final DeleteBook deleteBook;
+    private final BookMapper bookMapper;
 
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(CREATED)
     @PostMapping
-    public Book createBook(@RequestBody @Valid final BookPostRequestDTO dto) {
-        Book book = Book.createFromPostDTO(dto);
-        return createBook.handle(book);
+    public BookResponseDTO createBook(@RequestBody @Valid final BookPostRequestDTO bookPostRequestDTO) {
+        return bookMapper.toDTO(createBook.execute(bookMapper.toDomain(bookPostRequestDTO)));
     }
 
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(OK)
     @GetMapping
-    public List<Book> getBooks() {
-        return getBooks.handle();
+    public List<BookResponseDTO> getBooks() {
+        return getBooks.execute().stream().map(bookMapper::toDTO).toList();
     }
 
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(OK)
     @GetMapping("/{id}")
-    public Book getBook(@PathVariable("id") String id) {
-        return getBook.handle(id);
+    public BookResponseDTO getBook(@PathVariable("id") String id) {
+        return bookMapper.toDTO(getBook.execute(id));
     }
 
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(OK)
     @PutMapping("/{id}")
-    public Book updateBook(@PathVariable("id") String id, @RequestBody final BookPutRequestDTO dto) {
-        return updateBook.handle(id, dto);
+    public BookResponseDTO updateBook(@PathVariable("id") String id, @RequestBody final BookPutRequestDTO dto) {
+        return bookMapper.toDTO(updateBook.execute(id, dto));
     }
 
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(OK)
     @DeleteMapping("/{id}")
     public void deleteBook(@PathVariable("id") String id) {
-        deleteBook.handle(id);
+        deleteBook.execute(id);
     }
 }

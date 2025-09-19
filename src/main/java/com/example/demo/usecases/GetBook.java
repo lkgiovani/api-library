@@ -1,6 +1,9 @@
 package com.example.demo.usecases;
 
 import com.example.demo.domain.Book;
+import com.example.demo.exceptions.BookNotFoundException;
+import com.example.demo.gateways.BookGateway;
+import com.example.demo.gateways.entity.BookEntity;
 import com.example.demo.exceptions.CustomHttpException;
 import com.example.demo.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,10 +14,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class GetBook {
 
-    private final BookRepository repository;
+    private final BookGateway BookGateway;
 
-    public Book handle(String id){
-        return repository.findById(id)
-                .orElseThrow(() -> new CustomHttpException("Book not found", HttpStatus.NOT_FOUND.value()));
+    public Book execute(String id){
+        return BookGateway.getBookById(id);
     }
 }
